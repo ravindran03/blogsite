@@ -1,65 +1,67 @@
 import express from "express";
-
-let articledb=[{
-    id: "Sample-1",
-    likes: 0,
-    comments:[],
-},{
-    id: "Sample-2",
-    likes: 0,
-    comments:[],
-},{
-    id: "Sample-3",
-    likes: 0,
-    comments:[],
-},{
-    id: "Sample-4",
-    likes: 0,
-    comments:[],
-}]
+import { db,connectToDb } from "./db.js";
 
 const app = express();
 app.use(express.json());
+
+app.get('/api/articles/:articleID',async (req,res)=>{
+    const {articleID}=req.params;
+        
+    const article = await db.collection('articles').findOne({id:articleID});
+    if(article){
+        res.json(article);
+    }
+    else{
+        res.status(404).send('this article doesn\'t exist');
+    }
+    
+});
 
 app.post('/hello',(req,res)=>{
     console.log(req.body);
     res.send(`hello ${req.body.name}`);
 });
 
-app.put('/api/articles/:articleID/like',(req,res)=>{
+app.put('/api/articles/:articleID/like',async (req,res)=>{
     const {articleID}=req.params;
-    const article=articledb.find(a=>articleID===a.id);
+    
+    await db.collection('articles').updateOne({id:articleID},{
+        $inc: {likes:1}
+    });
+        
+    const article = await db.collection('articles').findOne({id:articleID});
+
+    //const article=articledb.find(a=>articleID===a.id);
     if(article){
-        article.likes+=1;
-        res.send(`this article has ${article.likes}likes`)
+        //article.likes+=1;
+        res.send(`${article.id} article has ${article.likes}likes`);
     }
     else{
-        res.send('that article doesn\'t exists');
-    }
-      
+        res.status(404).send('that article doesn\'t exists');
+    }      
 })
 
-app.post('/api/articles/:articleID/comment',(req,res)=>{
+app.post('/api/articles/:articleID/comment',async (req,res)=>{
     const {articleID} = req.params;
-    const {postedby,comment} = req.body;
-    const article=articledb.find(a=>articleID==a.id);
+    const {postedby,comment} = req.body;    
+    
+    await db.collection('articles').updateOne({id:articleID},{
+        $push: {comments: {postedby,comment}}
+    });
+    const article = await db.collection('articles').findOne({id:articleID});
     
     console.log({article})
     if(article){
-       
-        article.comments.push({postedby,comment});
-
-        // console.log(article.comments);
-        // console.log(article.comments[0].comment);
-
-        res.send(`${postedby} cmt ${comment} for the ${article.id} article`)
-        // res.send(article.comments)
+          
+        res.json(article);
+        //res.send(`${postedby} commented ${comment} for the ${article.id} article`);       
     }
     else{
-        res.send('article doesn\'t exist');
+        res.status(404).send('article doesn\'t exist');
     }
 })
-
-app.listen(8000,()=>{
+connectToDb(()=>{
+    app.listen(8000,()=>{
     console.log('server is listening');
+    });
 });
