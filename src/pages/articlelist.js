@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 
-const Article =({articledata})=>{
+const ArticleList =({articledata})=>{
     return(
         <>
         {articledata.map(data => (
@@ -15,4 +15,4 @@ const Article =({articledata})=>{
         </>
     )
 }
-export default Article;
+export default ArticleList;

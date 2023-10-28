@@ -1,12 +1,12 @@
 import articledata from "./articledata";
-import Article from "./articlelist";
+import ArticleList from "./articlelist";
 
 const Articlelistpage= () => {
         
     return(
         <>
         <h1>Articles</h1>
-        <Article articledata={articledata} />    
+        <ArticleList articledata={articledata} />    
         </>        
     );
 }

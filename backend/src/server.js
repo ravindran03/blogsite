@@ -34,7 +34,7 @@ app.put('/api/articles/:articleID/like',async (req,res)=>{
     //const article=articledb.find(a=>articleID===a.id);
     if(article){
         //article.likes+=1;
-        res.send(`${article.id} article has ${article.likes}likes`);
+        res.json(article);
     }
     else{
         res.status(404).send('that article doesn\'t exists');
@@ -49,8 +49,7 @@ app.post('/api/articles/:articleID/comment',async (req,res)=>{
         $push: {comments: {postedby,comment}}
     });
     const article = await db.collection('articles').findOne({id:articleID});
-    
-    console.log({article})
+        
     if(article){
           
         res.json(article);

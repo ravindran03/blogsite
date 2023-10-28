@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 
+
 const NavBar = () => {
     return(
-        <nav >
-            <ul style={ {float:"inline"}}>
+        <nav className="navbar">
+            <ul>
                 <li>
                     <Link to={'/'} >Homepage</Link>
                 </li>
