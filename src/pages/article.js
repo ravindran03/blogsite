@@ -5,13 +5,14 @@ import { useEffect,useState } from "react";
 import axios from "axios";
 import CommentsList from "../components/CommentsList";
 import AddComment from "../components/AddComment";
+import useUser from "../hooks/useUser";
 
-
-const Article= () => {
+const Article = () => {
     const {articleID}=useParams();
     const article =  articledata.find(article=>article.id===articleID);
 
-    
+    const {user}=useUser();
+
     const [articleInfo,setArticleInfo] = useState({likes: 0,comments: []});
     useEffect(()=>{
         const loadarticledata = async () =>{
@@ -39,11 +40,15 @@ const Article= () => {
 
     return (
         <>
+        {user?
         <button onClick={addLike}>likes</button>
+        :<button>Login</button>}
         <p>this article has {articleInfo.likes} likes </p>
         <h1>{article.name}</h1>
         <p>{article.description}</p>
+        {user?
         <AddComment articleID={articleID} onArticleChange={onArticleChange=>setArticleInfo(onArticleChange)} />
+        :<button>Login</button>}
         <CommentsList comments={articleInfo.comments} />
         
         </>
