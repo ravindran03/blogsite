@@ -10,7 +10,7 @@ const NavBar = () => {
     const logout = async ()=>{    
         await signOut(getAuth())
         .then(()=>{setMessage('you are logged out')})
-        // .finally(()=>{navigate('/articles')})
+        .finally(()=>{window.location.reload()})
     }
     return(
         <nav className="navbar">
@@ -31,9 +31,8 @@ const NavBar = () => {
                 <li>
                     <Link to={'/login'}>Login</Link>                    
                 </li>} 
-                {message?
-                <li className="message">{message}</li>:
-                <></>}               
+                {message &&
+                <li className="message">{message}</li>}                      
             </ul>
         </nav>
     );

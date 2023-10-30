@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import articledata from "./articledata";
 import Notfoundpage from "./notfoundpage";
 import { useEffect,useState } from "react";
@@ -10,22 +10,31 @@ import useUser from "../hooks/useUser";
 const Article = () => {
     const {articleID}=useParams();
     const article =  articledata.find(article=>article.id===articleID);
-
-    const {user}=useUser();
-
-    const [articleInfo,setArticleInfo] = useState({likes: 0,comments: []});
+    const {user,isLoading}=useUser();
+    
+    const [articleInfo,setArticleInfo] = useState({likes: 0,comments: [],canUpvote: false});
+    const {canUpvote} = articleInfo
     useEffect(()=>{
         const loadarticledata = async () =>{
-            const responce = await axios.get(`/api/articles/${articleID}`);
+            const token = user && await user.getIdToken();
+            const headers = token ? {authtoken: token } :{};
+            
+            const responce = await axios.get(`/api/articles/${articleID}`,{headers});
             const newarticledata = responce.data;
             setArticleInfo(newarticledata);
                         
+        }
+        if(!isLoading){
+            loadarticledata();
         }  
-        loadarticledata();              
-    },[articleID]);   
+                      
+    },[user,isLoading]);   
     
     const addLike = async () =>{
-        const responce = await axios.put(`/api/articles/${articleID}/like`);
+        const token = user && await user.getIdToken();
+        const headers = token ? {authtoken: token } :{};
+        
+        const responce = await axios.put(`/api/articles/${articleID}/like`,null,{headers});
         const newarticledata = responce.data;
         setArticleInfo(newarticledata);
     }
@@ -41,14 +50,14 @@ const Article = () => {
     return (
         <>
         {user?
-        <button onClick={addLike}>likes</button>
-        :<button>Login</button>}
+        <button onClick={addLike}>{canUpvote ? `like`: `liked`}</button>
+        :<Link to={'/login'}><button>Login to like</button></Link>}
         <p>this article has {articleInfo.likes} likes </p>
         <h1>{article.name}</h1>
         <p>{article.description}</p>
         {user?
         <AddComment articleID={articleID} onArticleChange={onArticleChange=>setArticleInfo(onArticleChange)} />
-        :<button>Login</button>}
+        :<Link to={'/login'}><button>Login to comment</button></Link>}
         <CommentsList comments={articleInfo.comments} />
         
         </>

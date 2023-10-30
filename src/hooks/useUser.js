@@ -8,6 +8,7 @@ const useUser= () =>{
     useEffect(()=>{
         const unsubscribe = onAuthStateChanged(getAuth(), user=>{
             setUser(user);
+            
             setIsLoading(false);            
         });
         return unsubscribe;
