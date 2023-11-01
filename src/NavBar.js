@@ -25,9 +25,14 @@ const NavBar = () => {
                     <Link to={'/about'}>About</Link>                    
                 </li>
                 {user?
-                <li>
-                    <Link  onClick={logout}>Logout</Link>                    
-                </li>:
+                <>
+                    <li>
+                    <Link  to={'/addarticle'}>Add Article</Link>                    
+                    </li>
+                    <li>
+                        <Link  onClick={logout}>Logout</Link>                    
+                    </li>
+                </>:
                 <li>
                     <Link to={'/login'}>Login</Link>                    
                 </li>} 
